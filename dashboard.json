@@ -1,0 +1,4687 @@
+{
+ "metadata": {
+  "schema_version": "1.0",
+  "generated": "2026-11-25 17:39 UTC",
+  "inputs": {
+   "weighted": "population_weighted_sublineage_prevalence.csv",
+   "alerts": "sublineage_alerts.csv",
+   "sublineage_ga": "sublineage_growth_advantage.csv",
+   "group_ga": "group_growth_advantage.csv",
+   "tracker_summary": "tracker_summary.txt",
+   "ga_summary": "sublineage_growth_advantage_summary.txt",
+   "parameters": "parameters.yaml"
+  },
+  "latest_week": "2024-12-30",
+  "weeks_checked": {
+   "first": "2024-10-14",
+   "last": "2024-12-30",
+   "n": 11
+  },
+  "display_range": {
+   "start": "2024-07-08",
+   "end": "2024-12-30"
+  },
+  "missing_weeks": [
+   "2024-11-25"
+  ],
+  "ga_lookback": {
+   "start": "2024-11-04",
+   "end": "2024-12-30"
+  },
+  "excluded_groups": [
+   "unreportable"
+  ]
+ },
+ "parameters": {
+  "screen": {
+   "proportion_threshold": 0.01,
+   "weeks_to_check": 12,
+   "min_doubling_weeks": 4,
+   "window_weeks": 8,
+   "persistence_floor": 0.0025,
+   "noise_check": true,
+   "noise_z": 2.0,
+   "watch_threshold": 0.05,
+   "pseudo_count_total": 10000,
+   "boundary_clip": 1e-05,
+   "dispersion_floor": null,
+   "alert_markers": "latest"
+  },
+  "growth_advantage": {
+   "days_included": 49,
+   "thresh": 0.001,
+   "serial_interval": 5.5,
+   "nboots": 1000,
+   "b_upper": 1000,
+   "seed": 2026,
+   "other_groups": [
+    "recombinant",
+    "unreportable"
+   ]
+  },
+  "dashboard": {
+   "display_weeks": 26,
+   "exclude_groups": [
+    "unreportable"
+   ]
+  }
+ },
+ "methods": {
+  "screen": [
+   "Tier-1 alert criteria (Binomial GLM logistic-growth screen):",
+   "C1 endpoint:    last week of window >= 1%",
+   "C4 persistence: week before the endpoint >= 0.25% (two weeks in a row)",
+   "C2 growth:      GLM logit-scale slope > 0",
+   "C3 fast enough: GLM slope > 0.173/week (odds doubling < 4 weeks)",
+   "C5 clear of noise: slope > 2 x noise-adjusted SE (dispersion from the window's scatter)",
+   "window length:  8 weeks",
+   "pseudo denom:   10,000 (slope and noise-adjusted SE are both inert to this)",
+   "Watch: endpoint >= 5% but the week before < 0.25%"
+  ],
+  "growth_advantage": [
+   "look-back:   2024-11-04 to 2024-12-30 (8 weekly points, Freyja's 56-day rule)",
+   "lineages:    mean share > 0.1% over the look-back",
+   "s:           exp(5.5 x r) - 1, r = fitted daily logistic growth rate",
+   "95% CI:      bootstrap, 1,000 refits, both ends through the same exp step"
+  ]
+ },
+ "display": {
+  "lineage_colors": {
+   "JN.1.29.1": "#4c016f",
+   "JN.1.48": "#7c01b6",
+   "JN.1.51.1": "#9402da",
+   "JN.1.54.1": "#ac02fd",
+   "JN.1.55.1": "#b725fd",
+   "JN.1.55.2": "#c349fe",
+   "JN.1.58.2": "#cf6cfe",
+   "JN.1.8": "#da90fe",
+   "JN.1.11.1": "#5C9CF1",
+   "KS.1.1": "#6a2306",
+   "JN.1.16": "#BC3A88",
+   "JN.1.16.2": "#561a3e",
+   "JN.1.16.5": "#ce60a2",
+   "LA.1": "#e5a9cd",
+   "JN.1.16.1": "#366298",
+   "JN.1.32": "#2E7919",
+   "KP.1.1.3": "#1EB3B6",
+   "LP.5": "#9feeef",
+   "KP.2": "#5875A1",
+   "KP.2.10": "#b6c4d7",
+   "KP.2.15": "#175DFF",
+   "KP.3": "#B06589",
+   "KP.3.1": "#4a2637",
+   "KP.3.1.3": "#703954",
+   "KP.3.1.9": "#964d70",
+   "KP.3.2": "#c68fa9",
+   "KP.3.3": "#d9b5c6",
+   "KP.3.1.1": "#2F92A1",
+   "MC.13": "#194f57",
+   "MC.26": "#a8dee6",
+   "LB.1": "#795653",
+   "XEC.14": "#244c24",
+   "XEC.2": "#336d33",
+   "XEC.5": "#438d43",
+   "XEC.6": "#72bc72",
+   "XEC.8": "#92cc92",
+   "XEC.9": "#b3dbb3"
+  },
+  "group_colors": {
+   "JN.1.11.1": "#5C9CF1",
+   "JN.1.32": "#2E7919",
+   "KP.2.15": "#175DFF",
+   "KP.3": "#B06589",
+   "KP.3.1.1": "#2F92A1",
+   "KP.1.1.3": "#1EB3B6",
+   "XEC": "#4CA14C",
+   "JN.1.16.1": "#366298",
+   "JN.1": "#61018F",
+   "LB.1": "#795653",
+   "JN.1.16": "#BC3A88",
+   "JN.1.13.1": "#F2591C",
+   "KP.2": "#5875A1"
+  }
+ },
+ "tracker": [
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-07-08",
+   "share": 0.0003732707773113
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-07-15",
+   "share": 6.540043523911131e-06
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-07-22",
+   "share": 0.0002047139923448
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-07-29",
+   "share": 0.0008218800764115
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-08-05",
+   "share": 1.3991884591496858e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-08-19",
+   "share": 0.0003680396869299
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-08-26",
+   "share": 3.85007829005312e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-09-02",
+   "share": 0.000149027925961
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-09-09",
+   "share": 0.0001153796065785
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-09-16",
+   "share": 0.0003077212235588
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-09-23",
+   "share": 4.763676701196799e-06
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-09-30",
+   "share": 0.0002217768974814
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-10-28",
+   "share": 0.0533108365657494
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-11-11",
+   "share": 0.0018966911553703
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-12-09",
+   "share": 2.5784392549323795e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-12-16",
+   "share": 0.0001799330699243
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-07-15",
+   "share": 1.3413436203560387e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-09-16",
+   "share": 3.7691075037760845e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-09-23",
+   "share": 0.0006481954659527
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-09-30",
+   "share": 2.0596331458010145e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-10-14",
+   "share": 2.666899109444109e-05
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-10-28",
+   "share": 0.0535943518803848
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-11-04",
+   "share": 0.0010045248597797
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-11-11",
+   "share": 0.0035785613057565
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-07-08",
+   "share": 0.0048380200528947
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-07-15",
+   "share": 0.000880805857561
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-07-22",
+   "share": 0.0018907620582579
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-07-29",
+   "share": 0.0012683037283048
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-08-05",
+   "share": 0.0002339833997555
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-08-12",
+   "share": 0.0002536210675263
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-08-19",
+   "share": 0.0005908199168104
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-08-26",
+   "share": 0.0004900342494025
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-09-02",
+   "share": 0.0052380192100099
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-09-09",
+   "share": 0.000498619981562
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-09-16",
+   "share": 9.74745129706663e-06
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-09-23",
+   "share": 0.0042783225155443
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-10-07",
+   "share": 0.0001734966121619
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-10-21",
+   "share": 0.0546652719055056
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-10-28",
+   "share": 0.0001376846550024
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-12-23",
+   "share": 0.0001433151065221
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-08-19",
+   "share": 0.0012793792275204
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-09-09",
+   "share": 0.0001020269038354
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-10-28",
+   "share": 0.014446988513039
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-11-04",
+   "share": 0.0087433427594379
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-11-11",
+   "share": 0.0342234132920425
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-07-08",
+   "share": 0.0057667535704181
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-07-15",
+   "share": 0.0426328619106226
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-07-22",
+   "share": 2.510131697505073e-05
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-07-29",
+   "share": 0.000467826532514
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-08-19",
+   "share": 0.0027926087527317
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-08-26",
+   "share": 1.548540742643505e-05
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-09-02",
+   "share": 1.1334280115879944e-05
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-09-16",
+   "share": 0.0007385091682349
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-09-23",
+   "share": 0.0002638267138079
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-10-07",
+   "share": 0.0001808788573104
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-10-28",
+   "share": 1.8159096583948555e-05
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-11-04",
+   "share": 0.0541465906528462
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-11-11",
+   "share": 0.0001952959490498
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-07-08",
+   "share": 0.0059644225352035
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-07-15",
+   "share": 0.0016814942851314
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-07-22",
+   "share": 0.025468419981648
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-07-29",
+   "share": 0.0281198671042498
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-08-05",
+   "share": 0.0020552516028703
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-08-12",
+   "share": 0.0115758260995191
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-08-19",
+   "share": 3.91952180022515e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-08-26",
+   "share": 0.0093664141303431
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-09-02",
+   "share": 0.0802712327101287
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-09-09",
+   "share": 0.0074894527902938
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-09-16",
+   "share": 0.0078133799999824
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-09-23",
+   "share": 0.0346063983764542
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-09-30",
+   "share": 0.0058935699313886
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-10-07",
+   "share": 0.0089656052342539
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-10-14",
+   "share": 0.0004401364167685
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-10-28",
+   "share": 0.0711663049511593
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-11-04",
+   "share": 0.204863761354784
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-11-11",
+   "share": 0.1006325890223094
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-12-16",
+   "share": 7.593053628509824e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-12-23",
+   "share": 0.0038612655799075
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-07-08",
+   "share": 0.0003693845541941
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-07-15",
+   "share": 0.0001664318028752
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-07-22",
+   "share": 9.36294914613026e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-07-29",
+   "share": 6.961486934045191e-06
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-08-05",
+   "share": 4.593178489154296e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-08-12",
+   "share": 1.1344964611835088e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-08-19",
+   "share": 0.0002683098296213
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-08-26",
+   "share": 8.891787875922368e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-09-09",
+   "share": 0.0001912187846405
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-09-30",
+   "share": 8.47511437034398e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-10-21",
+   "share": 1.160962383982196e-05
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-12-23",
+   "share": 0.0634199638623932
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-07-08",
+   "share": 0.0635864572362186
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-07-15",
+   "share": 0.0448594392565104
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-07-22",
+   "share": 0.061443601736244
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-07-29",
+   "share": 0.0430860050177073
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-08-05",
+   "share": 0.0117458468308963
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-08-12",
+   "share": 0.0138563244064373
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-08-19",
+   "share": 0.0269949682681849
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-08-26",
+   "share": 0.0188114313150014
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-09-02",
+   "share": 0.0268070826740269
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-09-09",
+   "share": 0.0016480274738857
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-09-16",
+   "share": 0.0001962708145294
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-09-23",
+   "share": 0.0214319355229857
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-10-07",
+   "share": 0.0023567182793195
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-10-21",
+   "share": 0.0023645995109544
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-10-28",
+   "share": 0.0611443337236758
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-11-04",
+   "share": 0.0009080700792037
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-11-11",
+   "share": 0.0986044461285208
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-12-23",
+   "share": 0.0423235773917174
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-08-12",
+   "share": 0.0010895768322765
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-09-02",
+   "share": 0.0160027308414908
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-09-23",
+   "share": 0.0128992233143097
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-12-23",
+   "share": 0.1675016440737669
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-07-08",
+   "share": 0.0138369668895131
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-07-15",
+   "share": 0.0170468319195618
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-07-22",
+   "share": 0.0152581831346206
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-07-29",
+   "share": 0.0070404428317461
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-08-05",
+   "share": 0.043130981375298
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-08-12",
+   "share": 0.0084144465468779
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-08-19",
+   "share": 0.0916892412307621
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-08-26",
+   "share": 0.0010466721698168
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-09-02",
+   "share": 0.0013164833765257
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-09-09",
+   "share": 0.0152004836881641
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-09-16",
+   "share": 0.0058362301418419
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-09-23",
+   "share": 2.464660849301333e-05
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-09-30",
+   "share": 3.262471818150458e-05
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-10-07",
+   "share": 4.754048925246345e-05
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-10-14",
+   "share": 1.970247205609868e-05
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-11-11",
+   "share": 0.0013296439348273
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-12-16",
+   "share": 0.0296137516516579
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "week": "2024-12-30",
+   "share": 0.0703302802733545
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-12-02",
+   "share": 0.1712497732569008
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-07-08",
+   "share": 0.0225023746982546
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-07-15",
+   "share": 0.0142922128225218
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-07-22",
+   "share": 0.0474105323762811
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-07-29",
+   "share": 0.0345875587871693
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-08-05",
+   "share": 0.0322683713706636
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-08-12",
+   "share": 0.0133860181345128
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-08-19",
+   "share": 0.0318561482535104
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-08-26",
+   "share": 0.0160963817025949
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-09-02",
+   "share": 0.0200974156137953
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-09-09",
+   "share": 0.0705444127187154
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-09-16",
+   "share": 0.0266423737570186
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-09-23",
+   "share": 0.000351499161491
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-09-30",
+   "share": 0.0020824894649227
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-10-07",
+   "share": 0.0156932979502968
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-10-14",
+   "share": 0.0421564003748505
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-11-04",
+   "share": 0.1003595148176421
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-12-16",
+   "share": 0.0001979985419814
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-07-08",
+   "share": 0.0464571443303472
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-07-15",
+   "share": 0.0179651506036183
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-07-22",
+   "share": 0.1022878315586143
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-07-29",
+   "share": 0.0193858096847978
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-08-05",
+   "share": 0.0183447571147143
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-08-12",
+   "share": 0.0694852423226192
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-08-19",
+   "share": 0.0230194639651014
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-08-26",
+   "share": 0.0184635984947185
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-09-02",
+   "share": 0.03759893582013
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-09-09",
+   "share": 0.0101905970346547
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-09-16",
+   "share": 0.0995418637254647
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-09-23",
+   "share": 0.1339845370626983
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-09-30",
+   "share": 0.0131143249022032
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-10-07",
+   "share": 0.0191927419350987
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-10-14",
+   "share": 0.0436775151682963
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-10-21",
+   "share": 0.0764971927213211
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-10-28",
+   "share": 0.0494646440674437
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-11-04",
+   "share": 0.0042496525061891
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-11-11",
+   "share": 0.1356183879853514
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-11-18",
+   "share": 0.0971200952666953
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-12-02",
+   "share": 0.0010326929260097
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-12-09",
+   "share": 0.1314409206564298
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-12-16",
+   "share": 0.055757235423603
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-12-23",
+   "share": 0.0166201658933897
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-11-18",
+   "share": 0.0701843278458622
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-11-18",
+   "share": 0.1066870823017398
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-12-02",
+   "share": 0.0009435609763082
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-07-08",
+   "share": 0.0347537582095018
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-07-15",
+   "share": 0.1168961678556308
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-07-22",
+   "share": 0.0083401906326112
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-07-29",
+   "share": 0.0195568374042965
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-08-05",
+   "share": 0.0145003283081846
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-08-12",
+   "share": 0.0027443918216233
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-08-19",
+   "share": 5.47771270260679e-05
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-08-26",
+   "share": 0.023364244732889
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-09-09",
+   "share": 0.0123716696200006
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-09-16",
+   "share": 0.0106812233223206
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-09-30",
+   "share": 0.0004160199087343
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-10-07",
+   "share": 0.0012021908597036
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-10-14",
+   "share": 0.0990132604207103
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-11-04",
+   "share": 7.58126372002596e-05
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-12-16",
+   "share": 0.0010793101033299
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-07-08",
+   "share": 0.0825726088678046
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-07-15",
+   "share": 0.0563795781618043
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-07-22",
+   "share": 0.0971695998083674
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-07-29",
+   "share": 0.1115879046464328
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-08-05",
+   "share": 0.0607206460356816
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-08-12",
+   "share": 0.1348442674028935
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-08-19",
+   "share": 0.0415338863583187
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-08-26",
+   "share": 0.0673025679467887
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-09-02",
+   "share": 0.095546948435178
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-09-09",
+   "share": 0.0324997283732389
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-09-16",
+   "share": 0.0982826086484169
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-09-23",
+   "share": 0.0402065184905309
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-09-30",
+   "share": 0.1497679499789393
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-10-07",
+   "share": 0.2317319369447909
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-10-14",
+   "share": 0.0344797479698571
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-10-21",
+   "share": 0.0413056440780029
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-10-28",
+   "share": 0.1753124006103835
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-11-04",
+   "share": 0.1115418140297546
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-11-11",
+   "share": 0.3155067282479891
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-12-09",
+   "share": 0.6249805965801823
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-12-16",
+   "share": 0.6091628378168146
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-12-23",
+   "share": 0.3001342167846257
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "week": "2024-12-30",
+   "share": 0.4694155265897343
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-07-08",
+   "share": 0.1546710553042342
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-07-15",
+   "share": 0.1155958565241572
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-07-22",
+   "share": 0.1069493562165686
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-07-29",
+   "share": 0.0719057610650115
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-08-05",
+   "share": 0.1237984941385997
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-08-12",
+   "share": 0.0532222540696351
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-08-19",
+   "share": 0.082374796376752
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-08-26",
+   "share": 0.0450052065543327
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-09-02",
+   "share": 0.0288832474521802
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-09-09",
+   "share": 0.0236785390187729
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-09-16",
+   "share": 0.0458282791928105
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-09-23",
+   "share": 0.0012626961103759
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-09-30",
+   "share": 0.022513623733212
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-10-07",
+   "share": 0.0099321412487284
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-10-21",
+   "share": 0.0071356636920979
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-10-28",
+   "share": 0.0559059067028621
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-11-11",
+   "share": 0.2067040930307554
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-12-02",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-12-16",
+   "share": 0.0064540974434021
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-12-02",
+   "share": 0.0922244622894105
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-11-18",
+   "share": 0.0024657997058395
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-12-02",
+   "share": 0.3127607236069182
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-11-18",
+   "share": 0.6754482238573746
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-12-02",
+   "share": 0.0025870396568645
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "week": "2024-12-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-07-08",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-07-15",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-07-22",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-07-29",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-08-05",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-08-12",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-08-19",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-08-26",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-09-02",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-09-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-09-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-09-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-09-30",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-10-07",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-10-14",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-10-21",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-10-28",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-11-04",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-11-11",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-11-18",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-12-02",
+   "share": 0.2385155287464393
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-12-09",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-12-16",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-12-23",
+   "share": 0.0
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "week": "2024-12-30",
+   "share": 0.0
+  }
+ ],
+ "alerts": [
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.1",
+   "window_start": "2024-09-09",
+   "week": "2024-10-28",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0533108365657494,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": null,
+   "s_lo": null,
+   "s_hi": null,
+   "ci_above_0": null,
+   "fit_note": "Not estimated (mean \u2264 0.1%)"
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.55.2",
+   "window_start": "2024-09-09",
+   "week": "2024-10-28",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0535943518803848,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": null,
+   "s_lo": null,
+   "s_hi": null,
+   "ci_above_0": null,
+   "fit_note": "Not estimated (mean \u2264 0.1%)"
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.58.2",
+   "window_start": "2024-09-02",
+   "week": "2024-10-21",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0546652719055056,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": null,
+   "s_lo": null,
+   "s_hi": null,
+   "ci_above_0": null,
+   "fit_note": "Not estimated (mean \u2264 0.1%)"
+  },
+  {
+   "variant": "JN.1",
+   "lineage": "JN.1.8",
+   "window_start": "2024-09-23",
+   "week": "2024-11-11",
+   "status": "alert",
+   "alerting_now": false,
+   "endpoint_share": 0.0342234132920425,
+   "prior_week_share": 0.0087433427594379,
+   "slope": 0.9293527137946548,
+   "noise_se": 0.2350041242101538,
+   "slope_to_noise": 3.9546229961631454,
+   "odds_doubling_weeks": 0.7458386576714724,
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "s": -0.2652180146261567,
+   "s_lo": -0.9572766316374648,
+   "s_hi": -0.1591646587564307,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.13.1",
+   "lineage": "KS.1.1",
+   "window_start": "2024-09-16",
+   "week": "2024-11-04",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0541465906528462,
+   "prior_week_share": 1.8159096583948555e-05,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.9884585928644668,
+   "s_lo": -0.98847432417186,
+   "s_hi": -0.7786111537183517,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "window_start": "2024-09-09",
+   "week": "2024-10-28",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0711663049511593,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.5840023025118228,
+   "s_lo": -0.990416506158022,
+   "s_hi": 0.0545979999852721,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "window_start": "2024-09-16",
+   "week": "2024-11-04",
+   "status": "alert",
+   "alerting_now": false,
+   "endpoint_share": 0.204863761354784,
+   "prior_week_share": 0.0711663049511593,
+   "slope": 0.6114280761272729,
+   "noise_se": 0.2828553674099128,
+   "slope_to_noise": 2.1616279787301824,
+   "odds_doubling_weeks": 1.1336528491630176,
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "s": -0.5840023025118228,
+   "s_lo": -0.990416506158022,
+   "s_hi": 0.0545979999852721,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "JN.1.16",
+   "window_start": "2024-09-23",
+   "week": "2024-11-11",
+   "status": "alert",
+   "alerting_now": false,
+   "endpoint_share": 0.1006325890223094,
+   "prior_week_share": 0.204863761354784,
+   "slope": 0.4666959321688046,
+   "noise_se": 0.2128471975691356,
+   "slope_to_noise": 2.1926336710034224,
+   "odds_doubling_weeks": 1.485222245968137,
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "s": -0.5840023025118228,
+   "s_lo": -0.990416506158022,
+   "s_hi": 0.0545979999852721,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16",
+   "lineage": "LA.1",
+   "window_start": "2024-10-28",
+   "week": "2024-12-23",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0634199638623932,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": 0.2947668127589999,
+   "s_lo": -0.987927855094214,
+   "s_hi": 0.5978028854534292,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "window_start": "2024-09-09",
+   "week": "2024-10-28",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0611443337236758,
+   "prior_week_share": 0.0023645995109544,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.1449547756016288,
+   "s_lo": -0.9985291134022976,
+   "s_hi": 0.5044839208548684,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.16.1",
+   "lineage": "JN.1.16.1",
+   "window_start": "2024-09-23",
+   "week": "2024-11-11",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0986044461285208,
+   "prior_week_share": 0.0009080700792037,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.1449547756016288,
+   "s_lo": -0.9985291134022976,
+   "s_hi": 0.5044839208548684,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "JN.1.32",
+   "lineage": "JN.1.32",
+   "window_start": "2024-10-28",
+   "week": "2024-12-23",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.1675016440737669,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": 0.3054986552894407,
+   "s_lo": -0.9875662946595788,
+   "s_hi": 0.8087251767713366,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "KP.1.1.3",
+   "window_start": "2024-11-04",
+   "week": "2024-12-30",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0703302802733545,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": 0.484076499972722,
+   "s_lo": -0.5323193223508658,
+   "s_hi": 0.5370215286516296,
+   "ci_above_0": false,
+   "fit_note": "Fit held at the starting limit: s less reliable"
+  },
+  {
+   "variant": "KP.1.1.3",
+   "lineage": "LP.5",
+   "window_start": "2024-10-07",
+   "week": "2024-12-02",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.1712497732569008,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.006854128417189,
+   "s_lo": -0.9856473202468172,
+   "s_hi": 0.1283129599405568,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.2",
+   "lineage": "KP.2.10",
+   "window_start": "2024-09-16",
+   "week": "2024-11-04",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.1003595148176421,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.999493700514474,
+   "s_lo": -0.9997176956934474,
+   "s_hi": -0.667329628972053,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "window_start": "2024-09-30",
+   "week": "2024-11-18",
+   "status": "alert",
+   "alerting_now": false,
+   "endpoint_share": 0.0971200952666953,
+   "prior_week_share": 0.1356183879853514,
+   "slope": 0.2498576980717873,
+   "noise_se": 0.1106617488859084,
+   "slope_to_noise": 2.2578506176455693,
+   "odds_doubling_weeks": 2.774167799948254,
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "s": -0.0692849726348072,
+   "s_lo": -0.3857329131491354,
+   "s_hi": 0.1525792510961985,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1",
+   "window_start": "2024-10-14",
+   "week": "2024-12-09",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.1314409206564298,
+   "prior_week_share": 0.0010326929260097,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.0692849726348072,
+   "s_lo": -0.3857329131491354,
+   "s_hi": 0.1525792510961985,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.3",
+   "window_start": "2024-09-30",
+   "week": "2024-11-18",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0701843278458622,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.1203178664864164,
+   "s_lo": -0.985432697739947,
+   "s_hi": -0.0209527451214178,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.1.9",
+   "window_start": "2024-09-30",
+   "week": "2024-11-18",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.1066870823017398,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.1203267953738685,
+   "s_lo": -0.9853812265297972,
+   "s_hi": -0.0255203292032824,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.2",
+   "window_start": "2024-08-26",
+   "week": "2024-10-14",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0990132604207103,
+   "prior_week_share": 0.0012021908597036,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": null,
+   "s_lo": null,
+   "s_hi": null,
+   "ci_above_0": null,
+   "fit_note": "Not estimated (mean \u2264 0.1%)"
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "window_start": "2024-10-14",
+   "week": "2024-12-09",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.6249805965801823,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": 0.2237525354961609,
+   "s_lo": 0.0539380845231758,
+   "s_hi": 1.7693202990676695,
+   "ci_above_0": true,
+   "fit_note": ""
+  },
+  {
+   "variant": "KP.3",
+   "lineage": "KP.3.3",
+   "window_start": "2024-10-21",
+   "week": "2024-12-16",
+   "status": "alert",
+   "alerting_now": false,
+   "endpoint_share": 0.6091628378168146,
+   "prior_week_share": 0.6249805965801823,
+   "slope": 0.422764378676812,
+   "noise_se": 0.2064900100735002,
+   "slope_to_noise": 2.0473841738219143,
+   "odds_doubling_weeks": 1.6395590913534157,
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "s": 0.2237525354961609,
+   "s_lo": 0.0539380845231758,
+   "s_hi": 1.7693202990676695,
+   "ci_above_0": true,
+   "fit_note": ""
+  },
+  {
+   "variant": "LB.1",
+   "lineage": "LB.1",
+   "window_start": "2024-09-23",
+   "week": "2024-11-11",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.2067040930307554,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.2207656097695848,
+   "s_lo": -0.9153671112245444,
+   "s_hi": 0.1386356481210415,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.14",
+   "window_start": "2024-10-07",
+   "week": "2024-12-02",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.0922244622894105,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.0067524641355554,
+   "s_lo": -0.9851599233339724,
+   "s_hi": 0.1418513808555233,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.5",
+   "window_start": "2024-10-07",
+   "week": "2024-12-02",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.3127607236069182,
+   "prior_week_share": 0.0024657997058395,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.0079266618339652,
+   "s_lo": -0.980842302138828,
+   "s_hi": 0.1497145980838705,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.6",
+   "window_start": "2024-09-30",
+   "week": "2024-11-18",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.6754482238573746,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.1378837657476218,
+   "s_lo": -0.9816495550250376,
+   "s_hi": 0.0005487573338287,
+   "ci_above_0": false,
+   "fit_note": ""
+  },
+  {
+   "variant": "XEC",
+   "lineage": "XEC.8",
+   "window_start": "2024-10-07",
+   "week": "2024-12-02",
+   "status": "watch",
+   "alerting_now": false,
+   "endpoint_share": 0.2385155287464393,
+   "prior_week_share": 0.0,
+   "slope": null,
+   "noise_se": null,
+   "slope_to_noise": null,
+   "odds_doubling_weeks": null,
+   "C1": true,
+   "C2": null,
+   "C3": null,
+   "C4": false,
+   "C5": null,
+   "s": -0.0069439128670452,
+   "s_lo": -0.9862109619007146,
+   "s_hi": 0.183440660500427,
+   "ci_above_0": false,
+   "fit_note": ""
+  }
+ ],
+ "growth_advantage": {
+  "sublineage": [
+   {
+    "variant": "KP.1.1.3",
+    "lineage": "KP.1.1.3",
+    "s": 0.484076499972722,
+    "s_lo": -0.5323193223508658,
+    "s_hi": 0.5370215286516296,
+    "ci_above_0": false,
+    "latest_share": 0.0703302802733545,
+    "mean_share": 0.0126592094824799,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "JN.1.11.1",
+    "lineage": "JN.1.11.1",
+    "s": 0.3256550092194941,
+    "s_lo": -0.9930374524190596,
+    "s_hi": 0.395281871947186,
+    "ci_above_0": false,
+    "latest_share": 0.0299259377759262,
+    "mean_share": 0.0040698054661098,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1.32",
+    "lineage": "JN.1.32",
+    "s": 0.3054986552894407,
+    "s_lo": -0.9875662946595788,
+    "s_hi": 0.8087251767713366,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0209377055092208,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.2",
+    "lineage": "KP.2",
+    "s": 0.3049812891902872,
+    "s_lo": -0.9841075080230992,
+    "s_hi": 0.3744220607901645,
+    "ci_above_0": false,
+    "latest_share": 0.0257752849222077,
+    "mean_share": 0.0036674740665703,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1.16",
+    "lineage": "LA.1",
+    "s": 0.2947668127589999,
+    "s_lo": -0.987927855094214,
+    "s_hi": 0.5978028854534292,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0079274954827991,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.2.15",
+    "lineage": "KP.2.15",
+    "s": 0.2870096789542897,
+    "s_lo": -0.9874122162595704,
+    "s_hi": 0.358639685388268,
+    "ci_above_0": false,
+    "latest_share": 0.0231054178440565,
+    "mean_share": 0.0030568454005934,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3.3",
+    "s": 0.2237525354961609,
+    "s_lo": 0.0539380845231758,
+    "s_hi": 1.7693202990676695,
+    "ci_above_0": true,
+    "latest_share": 0.4694155265897343,
+    "mean_share": 0.3038427150061376,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "alerted in weeks checked"
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1.48",
+    "s": 0.1818525480059021,
+    "s_lo": -0.9873252254662216,
+    "s_hi": 0.266781369059393,
+    "ci_above_0": false,
+    "latest_share": 0.0119370687646811,
+    "mean_share": 0.0014921335955851,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3.1.1",
+    "lineage": "KP.3.1.1",
+    "s": 0.1539802488254837,
+    "s_lo": -0.7880159762299442,
+    "s_hi": 0.680179175823425,
+    "ci_above_0": false,
+    "latest_share": 0.3075346822338799,
+    "mean_share": 0.1509020294599476,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3",
+    "s": 0.045463371379969,
+    "s_lo": -0.9998770625038348,
+    "s_hi": 0.8525178354139225,
+    "ci_above_0": false,
+    "latest_share": 0.0570555252052402,
+    "mean_share": 0.0784532180694937,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1.54.1",
+    "s": 0.0137527310766487,
+    "s_lo": -0.8834232726357807,
+    "s_hi": 0.0903684694634214,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0010453457611041,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.9",
+    "s": -0.0066479761424197,
+    "s_lo": -0.9856204508469256,
+    "s_hi": 0.1675205268191775,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0013716723919528,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3.1.1",
+    "lineage": "MC.13",
+    "s": -0.0066564480322814,
+    "s_lo": -0.9851931101610384,
+    "s_hi": 0.1443482577598243,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.003231610175847,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1.16",
+    "lineage": "JN.1.16.5",
+    "s": -0.0066601926662335,
+    "s_lo": -0.9852368134669518,
+    "s_hi": 0.1308960872972402,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0025943810530878,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3.1.1",
+    "lineage": "MC.26",
+    "s": -0.0066712159687372,
+    "s_lo": -0.9854495693101516,
+    "s_hi": 0.1205568292579195,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0036600874901272,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.14",
+    "s": -0.0067524641355554,
+    "s_lo": -0.9851599233339724,
+    "s_hi": 0.1418513808555233,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0115280577861763,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.1.1.3",
+    "lineage": "LP.5",
+    "s": -0.006854128417189,
+    "s_lo": -0.9856473202468172,
+    "s_hi": 0.1283129599405568,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0214062216571126,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.8",
+    "s": -0.0069439128670452,
+    "s_lo": -0.9862109619007146,
+    "s_hi": 0.183440660500427,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0298144410933049,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.5",
+    "s": -0.0079266618339652,
+    "s_lo": -0.980842302138828,
+    "s_hi": 0.1497145980838705,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0394033154140947,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3.1",
+    "s": -0.0692849726348072,
+    "s_lo": -0.3857329131491354,
+    "s_hi": 0.1525792510961985,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0552298938322085,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "alerted in weeks checked"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.2",
+    "s": -0.0895599128806544,
+    "s_lo": -0.9821391382776372,
+    "s_hi": 0.0024841510573609,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0010058189371292,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3.1.3",
+    "s": -0.1203178664864164,
+    "s_lo": -0.985432697739947,
+    "s_hi": -0.0209527451214178,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0087730409807327,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3.1.9",
+    "s": -0.1203267953738685,
+    "s_lo": -0.9853812265297972,
+    "s_hi": -0.0255203292032824,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.013453830409756,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC.6",
+    "s": -0.1378837657476218,
+    "s_lo": -0.9816495550250376,
+    "s_hi": 0.0005487573338287,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0847544079392798,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "JN.1.16.1",
+    "lineage": "JN.1.16.1",
+    "s": -0.1449547756016288,
+    "s_lo": -0.9985291134022976,
+    "s_hi": 0.5044839208548684,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0177295116999302,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1.29.1",
+    "s": -0.1665146720886888,
+    "s_lo": -0.9982943790523788,
+    "s_hi": 0.0042322997167048,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.001187816827883,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1.51.1",
+    "s": -0.2095740588144556,
+    "s_lo": -0.9091568093952638,
+    "s_hi": -0.1066173115958889,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0019642337083716,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "JN.1.16",
+    "lineage": "JN.1.16.2",
+    "s": -0.213886125174006,
+    "s_lo": -0.9091574330182636,
+    "s_hi": -0.1100958607180787,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0020797380892043,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "no flag"
+   },
+   {
+    "variant": "LB.1",
+    "lineage": "LB.1",
+    "s": -0.2207656097695848,
+    "s_lo": -0.9153671112245444,
+    "s_hi": 0.1386356481210415,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0266447738092696,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1.8",
+    "s": -0.2652180146261567,
+    "s_lo": -0.9572766316374648,
+    "s_hi": -0.1591646587564307,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.005370844506435,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "alerted in weeks checked"
+   },
+   {
+    "variant": "JN.1.16",
+    "lineage": "JN.1.16",
+    "s": -0.5840023025118228,
+    "s_lo": -0.990416506158022,
+    "s_hi": 0.0545979999852721,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0386791933116607,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "alerted in weeks checked"
+   },
+   {
+    "variant": "JN.1.13.1",
+    "lineage": "KS.1.1",
+    "s": -0.9884585928644668,
+    "s_lo": -0.98847432417186,
+    "s_hi": -0.7786111537183517,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.006792735825237,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   },
+   {
+    "variant": "KP.2",
+    "lineage": "KP.2.10",
+    "s": -0.999493700514474,
+    "s_lo": -0.9997176956934474,
+    "s_hi": -0.667329628972053,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0125696891699529,
+    "weeks_used": 8,
+    "fit_note": "",
+    "screen_status": "watch"
+   }
+  ],
+  "group": [
+   {
+    "variant": "JN.1.11.1",
+    "lineage": "JN.1.11.1",
+    "s": 0.3305829440088021,
+    "s_lo": -0.9938426963230682,
+    "s_hi": 0.3971937959873319,
+    "ci_above_0": false,
+    "latest_share": 0.0303248506325608,
+    "mean_share": 0.0043540249800687,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable"
+   },
+   {
+    "variant": "JN.1.32",
+    "lineage": "JN.1.32",
+    "s": 0.3054986552894407,
+    "s_lo": -0.9875376534456914,
+    "s_hi": 0.8073517551110154,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0209377055092208,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "KP.2.15",
+    "lineage": "KP.2.15",
+    "s": 0.2870096789542897,
+    "s_lo": -0.9880139466066052,
+    "s_hi": 0.3605073456732504,
+    "ci_above_0": false,
+    "latest_share": 0.0231054178440565,
+    "mean_share": 0.0030568454005934,
+    "weeks_used": 8,
+    "fit_note": "Fit held at the starting limit: s less reliable"
+   },
+   {
+    "variant": "KP.3",
+    "lineage": "KP.3",
+    "s": 0.1413172227857482,
+    "s_lo": 0.0124836624878938,
+    "s_hi": 2.1628666864892447,
+    "ci_above_0": true,
+    "latest_share": 0.5264710517949744,
+    "mean_share": 0.4610099778478277,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "KP.3.1.1",
+    "lineage": "KP.3.1.1",
+    "s": 0.1224200281748928,
+    "s_lo": -0.1967088676611069,
+    "s_hi": 0.4056105536377556,
+    "ci_above_0": false,
+    "latest_share": 0.3075346822338799,
+    "mean_share": 0.1601021102694853,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "KP.1.1.3",
+    "lineage": "KP.1.1.3",
+    "s": 0.0967121333126994,
+    "s_lo": -0.1024122204240285,
+    "s_hi": 0.5285274128485002,
+    "ci_above_0": false,
+    "latest_share": 0.0703302802733545,
+    "mean_share": 0.0340654311395925,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "XEC",
+    "lineage": "XEC",
+    "s": -0.0866143018275518,
+    "s_lo": -0.982554988808446,
+    "s_hi": 0.086060419043064,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.1694838801760794,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "JN.1.16.1",
+    "lineage": "JN.1.16.1",
+    "s": -0.1419908466271844,
+    "s_lo": -0.998518127057959,
+    "s_hi": 0.4981658607954879,
+    "ci_above_0": false,
+    "latest_share": 0.0005039628605122,
+    "mean_share": 0.0182804374598791,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "JN.1",
+    "lineage": "JN.1",
+    "s": -0.1542618943267398,
+    "s_lo": -0.9986127788037166,
+    "s_hi": 0.3510036352341348,
+    "ci_above_0": false,
+    "latest_share": 0.0119370687646811,
+    "mean_share": 0.0155777007986141,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "LB.1",
+    "lineage": "LB.1",
+    "s": -0.2207656097695848,
+    "s_lo": -0.915761314860891,
+    "s_hi": 0.1483272849785653,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0266447738092696,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "JN.1.16",
+    "lineage": "JN.1.16",
+    "s": -0.534925153535865,
+    "s_lo": -0.9985692138377976,
+    "s_hi": 0.2564100955537243,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.0512981938566262,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "JN.1.13.1",
+    "lineage": "JN.1.13.1",
+    "s": -0.9884585928644668,
+    "s_lo": -0.9884743015801736,
+    "s_hi": -0.7746260250964336,
+    "ci_above_0": false,
+    "latest_share": 0.0,
+    "mean_share": 0.006792735825237,
+    "weeks_used": 8,
+    "fit_note": ""
+   },
+   {
+    "variant": "KP.2",
+    "lineage": "KP.2",
+    "s": -0.999529259291338,
+    "s_lo": -0.9997230041487188,
+    "s_hi": 0.360535092117225,
+    "ci_above_0": false,
+    "latest_share": 0.0257752849222077,
+    "mean_share": 0.0162978506573661,
+    "weeks_used": 8,
+    "fit_note": ""
+   }
+  ]
+ }
+}

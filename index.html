@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sublineage Tracker Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- D3 v7, kept next to this file so the dashboard works offline. -->
+<script src="d3.v7.min.js"></script>
+<style>
+  :root {
+    --accent: #0e7c86;
+    --accent-light: #e3f1f2;
+    --text: #222;
+    --muted: #666;
+    --line: #ddd;
+    --bg: #fafafa;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--text); background: var(--bg); }
+  header { background: #fff; border-bottom: 3px solid var(--accent); padding: 14px 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 20px; margin: 0; font-weight: 600; color: var(--accent); }
+  #data-label { background: #b00020; color: #fff; font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  #meta { font-size: 13px; color: var(--muted); flex: 1; }
+  #meta b { color: var(--text); font-weight: 600; }
+  button { font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid var(--accent); background: #fff; color: var(--accent); border-radius: 4px; cursor: pointer; }
+  button:hover { background: var(--accent-light); }
+  main { max-width: 1280px; margin: 0 auto; padding: 8px 28px 60px; }
+  section { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; margin-top: 18px; }
+  section h2 { font-size: 17px; margin: 0 0 4px; font-weight: 600; }
+  .caption { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+  #dropzone { margin: 60px auto; max-width: 640px; border: 2px dashed var(--accent); border-radius: 10px; padding: 60px 30px; text-align: center; background: #fff; }
+  #dropzone.over { background: var(--accent-light); }
+  #dropzone p { margin: 8px 0; }
+  #error { color: #b00020; font-weight: 600; }
+  .hidden { display: none !important; }
+  .axis text { font-size: 11px; fill: #444; }
+  .axis path, .axis line { stroke: #bbb; }
+  .grid line { stroke: #eee; }
+  .grid path { display: none; }
+  .axis-label { font-size: 12px; fill: #444; }
+  .row-label { font-size: 11px; fill: #333; cursor: pointer; }
+  .zero-line { stroke: #444; stroke-width: 1; stroke-dasharray: 3 3; }
+  .band { fill: var(--accent-light); }
+  .band-label { font-size: 11px; fill: var(--accent); }
+  [data-key] { transition: opacity 120ms; }
+  .dim { opacity: 0.12; }
+  .focus.series-line { stroke-width: 3.5 !important; }
+  #tooltip { position: fixed; pointer-events: none; background: #fff; border: 1px solid #bbb; border-radius: 4px; padding: 8px 10px; font-size: 12px; line-height: 1.45; box-shadow: 0 2px 6px rgba(0,0,0,.15); max-width: 320px; z-index: 10; }
+  #tooltip .t-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; margin-top: 8px; }
+  .legend-group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .legend-group .parent { font-weight: 600; color: #444; margin-right: 2px; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 1px 4px; border-radius: 3px; }
+  .chip:hover { background: #f0f0f0; }
+  .chip.pinned { outline: 2px solid var(--accent); }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .shape-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; margin: 4px 0 6px; align-items: center; }
+  .shape-legend svg { vertical-align: middle; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; font-size: 12px; width: 100%; }
+  th, td { padding: 5px 8px; border-bottom: 1px solid #eee; text-align: right; white-space: nowrap; }
+  th { position: sticky; top: 0; background: #f4f4f4; cursor: pointer; user-select: none; font-weight: 600; }
+  th:hover { background: #e9e9e9; }
+  th.left, td.left { text-align: left; }
+  td.pass { color: #1b7f3b; text-align: center; }
+  td.fail { color: #b00020; text-align: center; }
+  td.na { color: #999; text-align: center; }
+  tr[data-key]:hover { background: #f7fbfb; }
+  tr.focus { background: var(--accent-light) !important; }
+  .toolbar { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+  details summary { cursor: pointer; font-size: 17px; font-weight: 600; }
+  details pre { background: #f6f6f6; padding: 10px; font-size: 12px; overflow-x: auto; }
+  details h3 { font-size: 14px; margin: 16px 0 6px; }
+  .param-table td, .param-table th { text-align: left; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sublineage Tracker</h1>
+  <span id="data-label" class="hidden"></span>
+  <div id="meta">Load a dashboard.json file to begin.</div>
+  <button id="reset" class="hidden">Reset selection</button>
+  <button id="choose">Load file</button>
+  <input type="file" id="file-input" accept=".json,application/json" class="hidden">
+</header>
+
+<main>
+  <div id="dropzone">
+    <p><b>Drop dashboard.json here</b></p>
+    <p class="caption">or use "Load file". The file is read in your browser and is not sent anywhere.</p>
+    <p id="error"></p>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <section id="sec-tracker">
+      <h2>1. Sublineage tracker</h2>
+      <p class="caption" id="cap-tracker"></p>
+      <div id="chart-tracker"></div>
+      <div class="legend" id="legend-tracker"></div>
+    </section>
+
+    <section id="sec-timeline">
+      <h2>2. Alert timeline</h2>
+      <p class="caption" id="cap-timeline"></p>
+      <div class="shape-legend" id="legend-timeline"></div>
+      <div id="chart-timeline"></div>
+    </section>
+
+    <section id="sec-ga-sub">
+      <h2>3. Growth advantage by sublineage</h2>
+      <p class="caption" id="cap-ga-sub"></p>
+      <div class="shape-legend" id="legend-ga-sub"></div>
+      <div id="chart-ga-sub"></div>
+    </section>
+
+    <section id="sec-ga-group">
+      <h2>4. Growth advantage by parent group</h2>
+      <p class="caption" id="cap-ga-group"></p>
+      <div id="chart-ga-group"></div>
+    </section>
+
+    <section id="sec-table">
+      <h2>5. Results table</h2>
+      <p class="caption" id="cap-table"></p>
+      <div class="toolbar"><button id="download">Download CSV</button></div>
+      <div class="table-wrap"><table id="results-table"></table></div>
+    </section>
+
+    <section id="sec-methods">
+      <details>
+        <summary>6. Methods and definitions</summary>
+        <div id="methods"></div>
+      </details>
+    </section>
+  </div>
+</main>
+
+<div id="tooltip" class="hidden"></div>
+
+<script>
+"use strict";
+// =============================================================================
+// Sublineage tracker dashboard viewer.
+// Display only: every number shown is read from dashboard.json, which the
+// workflow builds. This file formats values; it does not calculate results.
+// =============================================================================
+
+const SCHEMA_VERSION = "1.0";
+const STATUS_LABEL = {"alerting now": "Alerting now", "alerted in weeks checked": "Alerted in weeks checked",
+                      "watch": "Watch", "no flag": "No flag"};
+const RECOMBINANT_NOTE = "Recombinant pools recombinant lineages not tracked separately.";
+
+let DATA = null;       // the loaded dashboard.json
+let pinned = null;     // key of the clicked (pinned) series, or null
+
+// ---------------------------------------------------------------- formatting
+const isNum = v => v !== null && v !== undefined && !Number.isNaN(v);
+const fmtPct = (v, d = 2) => isNum(v) ? (v * 100).toFixed(d) + "%" : "n/a";
+const fmtNum = (v, d) => isNum(v) ? v.toFixed(d) : "n/a";
+const fmtYesNo = v => v === true ? "Yes" : v === false ? "No" : "n/a";
+const fmtCI = r => isNum(r.s_lo) && isNum(r.s_hi) ? `${fmtPct(r.s_lo, 0)} to ${fmtPct(r.s_hi, 0)}` : "n/a";
+const parseDate = d3.utcParse("%Y-%m-%d");
+const fmtDate = d3.utcFormat("%Y-%m-%d");
+const fmtAxisDate = d3.utcFormat("%b %d");
+
+// ---------------------------------------------------------------- tooltip
+const tip = d3.select("#tooltip");
+function showTip(event, html) {
+  tip.html(html).classed("hidden", false);
+  const box = tip.node().getBoundingClientRect();
+  let x = event.clientX + 14, y = event.clientY + 14;
+  if (x + box.width > window.innerWidth - 8) x = event.clientX - box.width - 14;
+  if (y + box.height > window.innerHeight - 8) y = event.clientY - box.height - 14;
+  tip.style("left", x + "px").style("top", y + "px");
+}
+function hideTip() { tip.classed("hidden", true); }
+const tipRow = (label, value) => `<div>${label}: <b>${value}</b></div>`;
+
+// ---------------------------------------------------------------- highlighting
+// Every highlightable element carries data-key. Sublineages use "lin:<name>",
+// parent groups use "grp:<name>".
+function applyHighlight(key) {
+  d3.selectAll("[data-key]")
+    .classed("dim", function () { return key !== null && this.getAttribute("data-key") !== key; })
+    .classed("focus", function () { return key !== null && this.getAttribute("data-key") === key; });
+  d3.selectAll(".chip").classed("pinned", function () { return this.getAttribute("data-chip") === pinned; });
+  d3.select("#reset").classed("hidden", pinned === null);
+}
+function hoverOn(key) { applyHighlight(key); }
+function hoverOff() { applyHighlight(pinned); hideTip(); }
+function togglePin(key) { pinned = (pinned === key) ? null : key; applyHighlight(pinned); }
+function attachHighlight(sel, keyFn, tipFn) {
+  sel.attr("data-key", keyFn)
+    .style("cursor", "pointer")
+    .on("mouseenter", (event, d) => { hoverOn(keyFn(d)); if (tipFn) showTip(event, tipFn(d, event)); })
+    .on("mousemove", (event, d) => { if (tipFn) showTip(event, tipFn(d, event)); })
+    .on("mouseleave", hoverOff)
+    .on("click", (event, d) => { event.stopPropagation(); togglePin(keyFn(d)); });
+}
+d3.select("#reset").on("click", () => { pinned = null; applyHighlight(null); });
+
+// ---------------------------------------------------------------- loading
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); }
+    catch (e) { return showError("This file is not valid JSON."); }
+    showData(data);
+  };
+  reader.readAsText(file);
+}
+function showData(data) {
+  if (!data.metadata || data.metadata.schema_version !== SCHEMA_VERSION) {
+    return showError(`Expected a dashboard.json with schema_version ${SCHEMA_VERSION}.`);
+  }
+  DATA = data;
+  pinned = null;
+  d3.select("#dropzone").classed("hidden", true);
+  d3.select("#dashboard").classed("hidden", false);
+  renderAll();
+}
+// Auto-load: when the page is opened from a web address (e.g. GitHub Pages),
+// read dashboard.json from the same folder. Opened from disk, the drop zone is used.
+if (location.protocol.startsWith("http")) {
+  fetch("dashboard.json")
+    .then(r => r.ok ? r.json() : null)
+    .then(data => { if (data) showData(data); })
+    .catch(() => {});
+}
+function showError(msg) {
+  d3.select("#dropzone").classed("hidden", false);
+  d3.select("#dashboard").classed("hidden", true);
+  d3.select("#error").text(msg);
+}
+d3.select("#choose").on("click", () => document.getElementById("file-input").click());
+d3.select("#file-input").on("change", function () { if (this.files.length) loadFile(this.files[0]); this.value = ""; });
+document.addEventListener("dragover", e => { e.preventDefault(); d3.select("#dropzone").classed("over", true); });
+document.addEventListener("dragleave", () => d3.select("#dropzone").classed("over", false));
+document.addEventListener("drop", e => {
+  e.preventDefault();
+  d3.select("#dropzone").classed("over", false);
+  if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+});
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  if (!DATA) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderAll, 200);
+});
+
+// ---------------------------------------------------------------- helpers
+const linColor = name => DATA.display.lineage_colors[name] || "#999";
+const grpColor = name => DATA.display.group_colors[name] || "#999";
+const chartWidth = id => Math.max(600, document.getElementById(id).clientWidth);
+
+// Flagged lineages in display order: by parent, then lineage name.
+function flaggedLineages() {
+  const seen = new Map();
+  DATA.alerts.forEach(r => seen.set(r.lineage, r.variant));
+  return Array.from(seen, ([lineage, variant]) => ({lineage, variant}))
+    .sort((a, b) => d3.ascending(a.variant, b.variant) || d3.ascending(a.lineage, b.lineage));
+}
+
+// Point shapes for screen status (shape as well as color, so color is not the only cue).
+const STATUS_SHAPE = {
+  "alerting now":            {type: d3.symbolSquare,  filled: true},
+  "alerted in weeks checked": {type: d3.symbolCircle,  filled: true},
+  "watch":                   {type: d3.symbolDiamond, filled: false},
+  "no flag":                 {type: d3.symbolCircle,  filled: false},
+};
+function shapeLegend(target, entries) {
+  const div = d3.select(target).html("");
+  entries.forEach(({label, type, filled, square}) => {
+    const item = div.append("span");
+    const svg = item.append("svg").attr("width", 16).attr("height", 14);
+    if (square) {
+      svg.append("rect").attr("x", 2).attr("y", 2).attr("width", 12).attr("height", 10)
+        .attr("fill", filled ? "#777" : "#fff").attr("stroke", "#777").attr("stroke-width", 1.5);
+    } else {
+      svg.append("path").attr("transform", "translate(8,7)").attr("d", d3.symbol(type, 60)())
+        .attr("fill", filled ? "#777" : "#fff").attr("stroke", "#777").attr("stroke-width", 1.5);
+    }
+    item.append("span").text(" " + label);
+  });
+}
+
+// ---------------------------------------------------------------- render
+function renderAll() {
+  renderHeader();
+  renderTracker();
+  renderTimeline();
+  renderForest("sub");
+  renderForest("group");
+  renderTable();
+  renderMethods();
+  applyHighlight(pinned);
+}
+
+function renderHeader() {
+  const m = DATA.metadata;
+  // Label set at build time (e.g. "Mock data" from the mock config); absent in real builds.
+  d3.select("#data-label").classed("hidden", !m.data_label).text(m.data_label || "");
+  d3.select("#meta").html(
+    `Latest week <b>${m.latest_week}</b> &nbsp;|&nbsp; Weeks checked by the screen <b>${m.weeks_checked.first} to ${m.weeks_checked.last}</b> ` +
+    `&nbsp;|&nbsp; Growth advantage look-back <b>${m.ga_lookback.start} to ${m.ga_lookback.end}</b> ` +
+    `&nbsp;|&nbsp; Generated ${m.generated}`);
+}
+
+// 1. Sublineage tracker ---------------------------------------------------
+// Mirrors plot_tracker_panels in scripts/visualization/tracker_plots.py:
+// one panel per parent variant with an alerting or watch sublineage, one shared
+// y-axis (linear from 0 to proportion_threshold, log above), red dot on the most
+// recent alerting window (or every one, per alert_markers), hollow orange diamond
+// for watch, shaded panel when a sublineage in it alerts in the latest week.
+// Colors are the parent shades used in every other figure.
+
+// matplotlib's symlog transform (base 10, linthresh = t, linscale = 1):
+// linear below t, log10 above, joined at t.
+function symlog(t) {
+  const L = 1 / (1 - 1 / 10);
+  return y => y <= t ? (y / t) * L : L + Math.log10(y / t);
+}
+
+function renderTracker() {
+  const sp = DATA.parameters.screen;
+  const thr = sp.proportion_threshold;
+  const variants = Array.from(new Set(DATA.alerts.map(r => r.variant))).sort(d3.ascending);
+  d3.select("#legend-tracker").html("");
+  if (!variants.length) {
+    d3.select("#cap-tracker").text("No sublineages met the alert or watch criteria.");
+    d3.select("#chart-tracker").html("");
+    return;
+  }
+
+  // Caption: the same wording as the figure title in plot_tracker_panels.
+  const markerText = sp.alert_markers === "latest" ? "most recent alerting window" : "every alerting window";
+  const noiseTitle = sp.noise_check ? `, slope > ${sp.noise_z} noise-adjusted SE` : "";
+  d3.select("#cap-tracker").html(
+    `Sub-Lineage Early Warning Tracker: Last ${sp.weeks_to_check} Weeks<br>` +
+    `Red dot (${markerText}): endpoint ≥${thr * 100}% + endpoint and prior week ≥${sp.persistence_floor * 100}% + ` +
+    `Binomial GLM growth (odds doubling &lt; ${sp.min_doubling_weeks} wks${noiseTitle}, ${sp.window_weeks}-wk window)<br>` +
+    `Orange diamond: watch, endpoint ≥${sp.watch_threshold * 100}% but not present the week before. ` +
+    `Shaded panel: alert in the latest week. Y-axis: linear 0 to ${thr * 100}%, log above.`);
+
+  // Grid and shared y-axis, as in Step 3 of plot_tracker_panels.
+  const nCols = Math.ceil(Math.sqrt(variants.length));
+  const nRows = Math.ceil(variants.length / nCols);
+  const yTop = Math.min(Math.max(d3.max(DATA.tracker, d => d.share) * 1.25, thr * 2), 1.0);
+  const yTicks = [0, 0.0025, 0.005, 0.01, 0.02, 0.05, 0.1, 0.25, 0.5, 1.0].filter(t => t <= yTop);
+  const f = symlog(thr);
+
+  const W = chartWidth("chart-tracker"), panelW = Math.floor(W / nCols), panelH = 330;
+  const M = {top: 30, right: 70, bottom: 62, left: 62};
+  const weeks = DATA.tracker.map(d => parseDate(d.week));
+  const [x0, x1] = d3.extent(weeks);
+  const pad = (x1 - x0) * 0.1;   // ax.margins(x=0.1)
+  const x = d3.scaleUtc([new Date(+x0 - pad), new Date(+x1 + pad)], [M.left, panelW - M.right]);
+  const yPix = d3.scaleLinear([0, f(yTop)], [panelH - M.bottom, M.top]);
+  const y = v => yPix(f(v));
+
+  const svg = d3.select("#chart-tracker").html("").append("svg")
+    .attr("width", panelW * nCols).attr("height", panelH * nRows)
+    .on("click", () => { pinned = null; applyHighlight(null); });
+
+  const byLineage = d3.group(DATA.tracker, d => d.lineage);
+  const pointTip = (r, p) => `<div class="t-title">${r.lineage}</div>` + tipRow("Parent", r.variant) +
+    tipRow("Week", p.week) + tipRow("Share", fmtPct(p.share));
+  const markerTip = r => `<div class="t-title">${r.lineage}</div>` + tipRow("Parent", r.variant) +
+    tipRow("Week", r.week) + tipRow("Status", r.status === "alert" ? "Alert" : "Watch") +
+    tipRow("Share", fmtPct(r.endpoint_share)) +
+    (isNum(r.slope) ? tipRow("Slope", fmtNum(r.slope, 3) + "/week") +
+      tipRow("Odds doubling time", fmtNum(r.odds_doubling_weeks, 1) + " weeks") +
+      tipRow("Slope ÷ noise SE", fmtNum(r.slope_to_noise, 1)) : "");
+
+  variants.forEach((variant, i) => {
+    const g = svg.append("g").attr("transform",
+      `translate(${(i % nCols) * panelW},${Math.floor(i / nCols) * panelH})`);
+    const flags = DATA.alerts.filter(r => r.variant === variant);
+    const sublineages = Array.from(new Set(flags.map(r => r.lineage))).sort(d3.ascending);
+
+    // Panel background: shaded when a sublineage alerts in the latest week.
+    g.append("rect").attr("x", M.left).attr("y", M.top)
+      .attr("width", panelW - M.left - M.right).attr("height", panelH - M.top - M.bottom)
+      .attr("fill", flags.some(r => r.alerting_now) ? "#ffeeee" : "#fff").attr("stroke", "#333");
+
+    g.append("text").attr("x", (M.left + panelW - M.right) / 2).attr("y", M.top - 12)
+      .attr("text-anchor", "middle").attr("font-weight", "bold").attr("font-size", 13).text(variant);
+    g.append("g").attr("class", "axis").attr("transform", `translate(${M.left},0)`)
+      .call(d3.axisLeft(yPix).tickValues(yTicks.map(f)).tickFormat((v, k) => `${+(yTicks[k] * 100).toPrecision(12)}%`));
+    g.append("g").attr("class", "axis").attr("transform", `translate(0,${panelH - M.bottom})`)
+      .call(d3.axisBottom(x).ticks(5).tickFormat(fmtDate))
+      .selectAll("text").attr("transform", "rotate(-45)").attr("text-anchor", "end").attr("dx", "-0.4em").attr("dy", "0.5em");
+    g.append("text").attr("class", "axis-label").attr("transform", "rotate(-90)")
+      .attr("x", -(M.top + panelH - M.bottom) / 2).attr("y", 14).attr("text-anchor", "middle")
+      .text("Population-weighted proportion");
+    // Dashed line at the 1% threshold.
+    g.append("line").attr("x1", M.left).attr("x2", panelW - M.right).attr("y1", y(thr)).attr("y2", y(thr))
+      .attr("stroke", "red").attr("stroke-opacity", 0.5).attr("stroke-dasharray", "4 3");
+
+    sublineages.forEach(lineage => {
+      const key = "lin:" + lineage;
+      const pts = (byLineage.get(lineage) || []).slice().sort((a, b) => d3.ascending(a.week, b.week));
+      if (!pts.length) return;
+      const line = d3.line().x(d => x(parseDate(d.week))).y(d => y(d.share));
+      const r0 = flags.find(r => r.lineage === lineage);
+      g.append("path").attr("class", "series-line").attr("data-key", key).attr("fill", "none")
+        .attr("stroke", linColor(lineage)).attr("stroke-opacity", 0.8).attr("stroke-width", 2).attr("d", line(pts));
+      // Wider invisible copy for hovering; the tooltip reads the nearest week.
+      attachHighlight(g.append("path").datum(r0).attr("fill", "none").attr("stroke", "transparent")
+        .attr("stroke-width", 12).attr("d", line(pts)), () => key, (r, event) => {
+          const [mx] = d3.pointer(event, g.node());
+          const t = x.invert(mx);
+          const p = pts.reduce((best, q) => Math.abs(parseDate(q.week) - t) < Math.abs(parseDate(best.week) - t) ? q : best);
+          return pointTip(r, p);
+        });
+
+      // Label at the end of the line.
+      const last = pts[pts.length - 1];
+      attachHighlight(g.append("text").datum(r0).attr("x", x(parseDate(last.week)) + 9).attr("y", y(last.share))
+        .attr("dy", "0.35em").attr("font-size", 12).attr("font-weight", "bold").attr("fill", linColor(lineage))
+        .text(lineage.length <= 15 ? lineage : lineage.slice(0, 12) + "..."), () => key,
+        r => pointTip(r, last));
+
+      // Red dot: most recent alerting window (alert_markers 'latest') or every one ('all').
+      let alertRows = flags.filter(r => r.lineage === lineage && r.status === "alert");
+      if (sp.alert_markers === "latest") alertRows = alertRows.slice(-1);
+      attachHighlight(g.selectAll(null).data(alertRows).join("circle")
+        .attr("cx", r => x(parseDate(r.week))).attr("cy", r => y(r.endpoint_share)).attr("r", 5)
+        .attr("fill", "red").attr("stroke", "darkred").attr("stroke-width", 2), () => key, markerTip);
+
+      // Hollow orange diamond: watch.
+      attachHighlight(g.selectAll(null).data(flags.filter(r => r.lineage === lineage && r.status === "watch")).join("path")
+        .attr("transform", r => `translate(${x(parseDate(r.week))},${y(r.endpoint_share)}) rotate(45)`)
+        .attr("d", d3.symbol(d3.symbolSquare, 70)())
+        .attr("fill", "none").attr("stroke", "darkorange").attr("stroke-width", 2.5), () => key, markerTip);
+    });
+  });
+}
+
+// 2. Alert timeline -------------------------------------------------------
+function renderTimeline() {
+  const m = DATA.metadata;
+  const lineages = flaggedLineages();
+  d3.select("#cap-timeline").text(
+    `Each mark is a week in which a lineage met the alert rules (filled) or the watch rule (open), ` +
+    `over the weeks checked by the screen (${m.weeks_checked.first} to ${m.weeks_checked.last}). ` +
+    `A black outline marks lineages alerting in the latest week.`);
+  shapeLegend("#legend-timeline", [
+    {label: "Alert", square: true, filled: true},
+    {label: "Watch", square: true, filled: false},
+  ]);
+
+  const rowH = 20, M = {top: 10, right: 20, bottom: 34, left: 150};
+  const W = chartWidth("chart-timeline"), H = M.top + M.bottom + rowH * lineages.length;
+  const x = d3.scaleUtc([d3.utcDay.offset(parseDate(m.weeks_checked.first), -4), d3.utcDay.offset(parseDate(m.weeks_checked.last), 4)],
+                        [M.left, W - M.right]);
+  const y = d3.scaleBand(lineages.map(d => d.lineage), [M.top, H - M.bottom]).padding(0.2);
+  const cellW = x(d3.utcDay.offset(parseDate(m.weeks_checked.first), 6)) - x(parseDate(m.weeks_checked.first));
+
+  const svg = d3.select("#chart-timeline").html("").append("svg").attr("width", W).attr("height", H)
+    .on("click", () => { pinned = null; applyHighlight(null); });
+  svg.append("g").attr("class", "grid").attr("transform", `translate(0,${H - M.bottom})`)
+    .call(d3.axisBottom(x).ticks(d3.utcMonday.every(1)).tickSize(-(H - M.top - M.bottom)).tickFormat(""));
+  svg.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.bottom})`)
+    .call(d3.axisBottom(x).ticks(d3.utcMonday.every(1)).tickFormat(fmtAxisDate));
+  attachHighlight(
+    svg.append("g").selectAll("text").data(lineages).join("text").attr("class", "row-label")
+      .attr("x", M.left - 8).attr("y", d => y(d.lineage) + y.bandwidth() / 2).attr("dy", "0.35em")
+      .attr("text-anchor", "end").text(d => `${d.lineage} (${d.variant})`),
+    d => "lin:" + d.lineage, null);
+
+  const markTip = r => `<div class="t-title">${r.lineage}</div>` + tipRow("Parent", r.variant) +
+    tipRow("Week", r.week) + tipRow("Status", r.status === "alert" ? "Alert" : "Watch") +
+    tipRow("Share", fmtPct(r.endpoint_share)) + tipRow("Week before", fmtPct(r.prior_week_share)) +
+    (isNum(r.slope) ? tipRow("Slope", fmtNum(r.slope, 3) + "/week") + tipRow("Slope ÷ noise SE", fmtNum(r.slope_to_noise, 1)) : "") +
+    (r.alerting_now ? "<div><b>Alerting in the latest week</b></div>" : "");
+  attachHighlight(
+    svg.append("g").selectAll("rect").data(DATA.alerts).join("rect")
+      .attr("x", r => x(parseDate(r.week)) - cellW / 2).attr("width", cellW)
+      .attr("y", r => y(r.lineage)).attr("height", y.bandwidth()).attr("rx", 2)
+      .attr("fill", r => r.status === "alert" ? linColor(r.lineage) : "#fff")
+      .attr("stroke", r => r.alerting_now ? "#000" : linColor(r.lineage))
+      .attr("stroke-width", r => r.alerting_now ? 2 : 1.5),
+    r => "lin:" + r.lineage, markTip);
+}
+
+// 3 and 4. Growth advantage forest plots ----------------------------------
+function renderForest(level) {
+  const m = DATA.metadata;
+  const isSub = level === "sub";
+  const rows = DATA.growth_advantage[isSub ? "sublineage" : "group"].filter(r => isNum(r.s));
+  const notShown = DATA.growth_advantage[isSub ? "sublineage" : "group"].length - rows.length;
+  const id = isSub ? "ga-sub" : "ga-group";
+  const keyOf = r => isSub ? "lin:" + r.lineage : "grp:" + r.variant;
+  const colorOf = r => isSub ? linColor(r.lineage) : grpColor(r.variant);
+  const labelOf = r => isSub ? `${r.lineage} (${r.variant})` : r.variant;
+
+  d3.select("#cap-" + id).text(
+    `Growth advantage s with its 95% confidence interval, look-back ${m.ga_lookback.start} to ${m.ga_lookback.end}` +
+    (isSub ? ", for every sublineage with an estimate, sorted by s. Shape shows the screen result over the weeks checked." :
+             ", for each parent variant group, sorted by s.") +
+    ` Thicker interval lines have a CI above 0. The dashed line is s = 0.` +
+    (notShown ? ` ${notShown} estimate(s) with no s are listed only in the results table.` : ""));
+  if (isSub) {
+    shapeLegend("#legend-ga-sub", Object.entries(STATUS_SHAPE).map(([k, v]) => ({label: STATUS_LABEL[k], ...v})));
+  }
+
+  const rowH = 17, M = {top: 10, right: 30, bottom: 44, left: 170};
+  const W = chartWidth("chart-" + id), H = M.top + M.bottom + rowH * rows.length;
+  const lo = d3.min(rows, r => isNum(r.s_lo) ? r.s_lo : r.s), hi = d3.max(rows, r => isNum(r.s_hi) ? r.s_hi : r.s);
+  const x = d3.scaleLinear([Math.min(lo, -0.05), Math.max(hi, 0.05)], [M.left, W - M.right]).nice();
+  const y = d3.scaleBand(rows.map(keyOf), [M.top, H - M.bottom]).padding(0.25);
+
+  const svg = d3.select("#chart-" + id).html("").append("svg").attr("width", W).attr("height", H)
+    .on("click", () => { pinned = null; applyHighlight(null); });
+  svg.append("g").attr("class", "grid").attr("transform", `translate(0,${H - M.bottom})`)
+    .call(d3.axisBottom(x).tickSize(-(H - M.top - M.bottom)).tickFormat(""));
+  svg.append("g").attr("class", "axis").attr("transform", `translate(0,${H - M.bottom})`)
+    .call(d3.axisBottom(x).tickFormat(d => (d * 100).toFixed(0) + "%"));
+  svg.append("text").attr("class", "axis-label").attr("x", (M.left + W - M.right) / 2).attr("y", H - 8)
+    .attr("text-anchor", "middle").text("Growth advantage, s");
+  svg.append("line").attr("class", "zero-line").attr("x1", x(0)).attr("x2", x(0)).attr("y1", M.top).attr("y2", H - M.bottom);
+
+  const gaTip = r => `<div class="t-title">${isSub ? r.lineage : r.variant}</div>` +
+    (isSub ? tipRow("Parent", r.variant) : "") +
+    tipRow("s", fmtPct(r.s, 0)) + tipRow("95% CI", fmtCI(r)) + tipRow("CI above 0", fmtYesNo(r.ci_above_0)) +
+    tipRow("Latest share", fmtPct(r.latest_share)) + tipRow("Mean share over look-back", fmtPct(r.mean_share)) +
+    tipRow("Weeks used", r.weeks_used) +
+    (isSub ? tipRow("Screen", STATUS_LABEL[r.screen_status]) : "") +
+    (r.fit_note ? `<div><i>${r.fit_note}</i></div>` : "") +
+    (!isSub && r.variant.toLowerCase() === "recombinant" ? `<div><i>${RECOMBINANT_NOTE}</i></div>` : "");
+
+  attachHighlight(
+    svg.append("g").selectAll("text").data(rows).join("text").attr("class", "row-label")
+      .attr("x", M.left - 8).attr("y", r => y(keyOf(r)) + y.bandwidth() / 2).attr("dy", "0.35em")
+      .attr("text-anchor", "end").text(r => labelOf(r) + (!isSub && r.variant.toLowerCase() === "recombinant" ? " *" : "")),
+    keyOf, gaTip);
+
+  const rowG = svg.append("g").selectAll("g").data(rows).join("g")
+    .attr("transform", r => `translate(0,${y(keyOf(r)) + y.bandwidth() / 2})`);
+  attachHighlight(rowG, keyOf, gaTip);
+  rowG.append("rect").attr("x", M.left).attr("width", W - M.left - M.right)
+    .attr("y", -rowH / 2).attr("height", rowH).attr("fill", "transparent");
+  rowG.filter(r => isNum(r.s_lo) && isNum(r.s_hi)).append("line")
+    .attr("x1", r => x(r.s_lo)).attr("x2", r => x(r.s_hi))
+    .attr("stroke", colorOf).attr("stroke-width", r => r.ci_above_0 ? 3 : 1.4);
+  rowG.append("path")
+    .attr("transform", r => `translate(${x(r.s)},0)`)
+    .attr("d", r => d3.symbol(isSub ? STATUS_SHAPE[r.screen_status].type : d3.symbolCircle, 55)())
+    .attr("fill", r => (isSub ? STATUS_SHAPE[r.screen_status].filled : true) ? colorOf(r) : "#fff")
+    .attr("stroke", colorOf).attr("stroke-width", 1.6);
+
+  if (!isSub && rows.some(r => r.variant.toLowerCase() === "recombinant")) {
+    d3.select("#cap-ga-group").text(d3.select("#cap-ga-group").text() + " * " + RECOMBINANT_NOTE);
+  }
+}
+
+// 5. Results table --------------------------------------------------------
+const crit = v => v === true ? ["✓", "pass"] : v === false ? ["✗", "fail"] : ["n/a", "na"];
+function tableColumns() {
+  const lb = DATA.metadata.ga_lookback;
+  const ga = `(${lb.start} to ${lb.end})`;
+  return [
+    {key: "lineage", label: "Lineage", left: true, show: r => r.lineage},
+    {key: "variant", label: "Parent", left: true, show: r => r.variant},
+    {key: "week", label: "Week", left: true, show: r => r.week},
+    {key: "status", label: "Status", left: true, show: r => r.status === "alert" ? "Alert" : "Watch"},
+    {key: "alerting_now", label: "Alerting now", show: r => fmtYesNo(r.alerting_now)},
+    {key: "endpoint_share", label: "Share (this week)", show: r => fmtPct(r.endpoint_share)},
+    {key: "prior_week_share", label: "Share (week before)", show: r => fmtPct(r.prior_week_share)},
+    {key: "slope", label: "Slope (per week)", show: r => fmtNum(r.slope, 3)},
+    {key: "odds_doubling_weeks", label: "Odds doubling time (weeks)", show: r => fmtNum(r.odds_doubling_weeks, 1)},
+    {key: "noise_se", label: "Noise-adjusted SE", show: r => fmtNum(r.noise_se, 3)},
+    {key: "slope_to_noise", label: "Slope ÷ noise SE", show: r => fmtNum(r.slope_to_noise, 1)},
+    ...["C1", "C2", "C3", "C4", "C5"].map(c => ({key: c, label: c, crit: true, show: r => crit(r[c])[0]})),
+    {key: "s", label: `Growth advantage ${ga}`, show: r => fmtPct(r.s, 0)},
+    {key: "s_lo", label: "95% CI", show: r => fmtCI(r)},
+    {key: "ci_above_0", label: "CI above 0", show: r => fmtYesNo(r.ci_above_0)},
+    {key: "fit_note", label: "Fit note", left: true, show: r => r.fit_note || ""},
+  ];
+}
+let sortState = {key: null, dir: 1};
+function renderTable() {
+  const m = DATA.metadata;
+  d3.select("#cap-table").text(
+    `One row per week a lineage met the alert or watch rule (${DATA.alerts.length} rows). ` +
+    `C1 to C5 are shown as ✓ (pass), ✗ (fail) or n/a (no slope fitted). ` +
+    `The growth advantage comes from one look-back (${m.ga_lookback.start} to ${m.ga_lookback.end}), so it repeats on every row of a lineage. ` +
+    `Click a column header to sort.`);
+  const cols = tableColumns();
+  const rows = DATA.alerts.slice();
+  if (sortState.key) {
+    rows.sort((a, b) => {
+      const va = a[sortState.key], vb = b[sortState.key];
+      if (va === null || va === undefined) return 1;
+      if (vb === null || vb === undefined) return -1;
+      return sortState.dir * (va < vb ? -1 : va > vb ? 1 : 0);
+    });
+  }
+  const table = d3.select("#results-table").html("");
+  table.append("thead").append("tr").selectAll("th").data(cols).join("th")
+    .attr("class", c => c.left ? "left" : null)
+    .text(c => c.label + (sortState.key === c.key ? (sortState.dir === 1 ? " ▲" : " ▼") : ""))
+    .on("click", (event, c) => {
+      sortState = {key: c.key, dir: sortState.key === c.key ? -sortState.dir : 1};
+      renderTable(); applyHighlight(pinned);
+    });
+  const tr = table.append("tbody").selectAll("tr").data(rows).join("tr");
+  attachHighlight(tr, r => "lin:" + r.lineage, null);
+  tr.selectAll("td").data(r => cols.map(c => ({c, r}))).join("td")
+    .attr("class", ({c, r}) => c.crit ? crit(r[c.key])[1] : (c.left ? "left" : null))
+    .html(({c, r}) => c.key === "lineage"
+      ? `<span class="swatch" style="background:${linColor(r.lineage)}"></span> ${r.lineage}` : c.show(r));
+}
+d3.select("#download").on("click", () => {
+  // Raw values from the JSON, with the table's column names.
+  const cols = tableColumns().filter(c => c.key !== "s_lo");
+  const header = cols.map(c => c.key === "s" ? c.label : c.label).concat(["95% CI low", "95% CI high"]);
+  const lines = [header, ...DATA.alerts.map(r => cols.map(c => r[c.key]).concat([r.s_lo, r.s_hi]))]
+    .map(row => row.map(v => v === null || v === undefined ? "" : `"${String(v).replace(/"/g, '""')}"`).join(","));
+  const blob = new Blob([lines.join("\n")], {type: "text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `sublineage_tracker_results_${DATA.metadata.latest_week}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+// 6. Methods and definitions ---------------------------------------------
+function renderMethods() {
+  const m = DATA.metadata, p = DATA.parameters;
+  const div = d3.select("#methods").html("");
+  div.append("h3").text("Screen (from tracker_summary.txt)");
+  div.append("pre").text(DATA.methods.screen.join("\n"));
+  div.append("h3").text("Growth advantage (from the sublineage growth advantage summary)");
+  div.append("pre").text(DATA.methods.growth_advantage.join("\n"));
+  div.append("h3").text("Parameter values (parameters.yaml)");
+  const t = div.append("table").attr("class", "param-table");
+  t.append("thead").append("tr").selectAll("th").data(["Section", "Parameter", "Value"]).join("th").text(d => d);
+  const prow = [];
+  Object.entries(p).forEach(([section, vals]) =>
+    Object.entries(vals).forEach(([k, v]) => prow.push([section, k, Array.isArray(v) ? v.join(", ") : v === null ? "null" : String(v)])));
+  t.append("tbody").selectAll("tr").data(prow).join("tr").selectAll("td").data(d => d).join("td").text(d => d);
+  div.append("h3").text("This file");
+  div.append("pre").text([
+    `Schema version: ${m.schema_version}`,
+    `Generated: ${m.generated}`,
+    `Inputs: ${Object.values(m.inputs).join(", ")}`,
+    `Weeks with no data in the display range: ${m.missing_weeks.length ? m.missing_weeks.join(", ") : "none"}`,
+    `Groups left out of the dashboard: ${m.excluded_groups.length ? m.excluded_groups.join(", ") : "none"}`,
+  ].join("\n"));
+}
+</script>
+</body>
+</html>
